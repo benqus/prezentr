@@ -1,0 +1,32 @@
+{
+    "name": "prezentr",
+
+    "version": "0.1.0",
+
+    "author": {
+        "name": "Bence Kormos",
+        "url": "https://github.com/benqus"
+    },
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/benqus/prezentr"
+    },
+
+    "main": "dist/prezentr.js",
+
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-watch": "~0.5.3",
+        "grunt-contrib-jshint": "~0.7.0",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-uglify": "~0.2.4"
+    },
+
+    "licenses": [
+        {
+            "type": "GPLv3",
+            "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+        }
+    ]
+}
