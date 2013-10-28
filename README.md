@@ -40,7 +40,7 @@ Inherited static methods:
 
 > **extends** `Component`
 
-Blocks are meant to provide one - or more - root for the presentation inside a page by wrapping around the specified DOM Element.
+Blocks are meant to provide one - or more - root for the dynamically built presentation hierarchy inside a page by wrapping around the specified **empty** DOM Element.
 
 Presentation hierarchies should be able to align and adapt to different roots - these should be different Blocks.
 
