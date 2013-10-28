@@ -47,7 +47,7 @@ Presentation hierarchies should be able to align and adapt to different roots - 
     var MyPresentation = prezentr.Presenter.extend({ ... });
 
     var MyBlock = prezentr.Block({
-        main: MyPresentation
+        mainClass: MyPresentation
     });
 
     var block = new Block(document.body);
