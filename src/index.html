@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prezentr</title>
+
+    <script src="../build/prezentr.js"></script>
+
+    <script>
+      (function () {
+        var app;
+        var View = prezentr.View;
+        var Presenter = prezentr.Presenter;
+
+        var MyView = View.extend({
+          /**
+           * @override
+           */
+          initialize: function (text) {
+            this.element.innerText = text;
+            return View.prototype.initialize.apply(this, arguments);
+          }
+        });
+
+        var MyPresenter = Presenter.extend({
+          viewClass: MyView
+        });
+
+        var MyBlock = prezentr.Block.extend({
+          mainClass: MyPresenter
+        });
+
+        window.onload = function () {
+          app = new MyBlock(document.body);
+          app.initialize("Hey mate!");
+        }
+
+      })((function () {
+          return this;
+      })());
+    </script>
+
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
