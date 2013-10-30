@@ -8,6 +8,13 @@ root.prezentr = prezentr;
 
 var _slice = Array.prototype.slice;
 
+var RENDER_METHODS = prezentr.renderMethods = {
+  APPEND: 'append',
+  PREPEND: 'prepend',
+  BEFORE: 'before',
+  AFTER: 'after'
+};
+
 var _isFunction = function (arg) {
   return (typeof arg === 'function');
 };
@@ -26,4 +33,18 @@ var _isString = function (arg) {
 
 var _isNumber = function (arg) {
   return (typeof arg === 'number' && !isNaN(arg) && isFinite(arg));
+};
+
+var _getElement = function (arg, parent) {
+  var result;
+
+  if (typeof arg === 'string') {
+    result = ((parent || document).querySelector(arg) || parent);
+  } else if (arg instanceof Element) {
+    result = arg;
+  } else if (arg instanceof View) {
+    result = arg.element;
+  }
+
+  return result;
 };
