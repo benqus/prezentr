@@ -27,6 +27,7 @@ module.exports = function (grunt) {
           'src/js/View.js',
           'src/js/ActiveView.js',
           'src/js/Presenter.js',
+          'src/js/PresenterGroup.js',
           'src/js/Block.js',
 
           'utils/outro'
