@@ -17,8 +17,16 @@ var Presenter = prezentr.Presenter = Component.extend({
    * @constructor
    */
   constructor: function () {
+    var View = this.viewClass;
+    var _view;
+
     Component.apply(this, arguments);
-    this.view = new this.viewClass();
+
+    if (_isFunction(View)) {
+      _view = new View(this);
+    }
+
+    this.view = _view;
   },
 
   /**
