@@ -4,6 +4,13 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: pkg,
 
+    uglify: {
+      build: {
+        src: 'build/<%= pkg.name %>.js',
+        dest: 'build/<%= pkg.name %>.min.js'
+      }
+    },
+
     concat: {
       options: {
         separator: '\n\n',
@@ -21,11 +28,10 @@ module.exports = function (grunt) {
           'src/js/prezentr.js',
           'src/js/merge.js',
 
-          'src/js/Component.js',
           'src/js/EventHub.js',
+          'src/js/Component.js',
           'src/js/AnimationQueue.js',
           'src/js/View.js',
-          'src/js/ActiveView.js',
           'src/js/Presenter.js',
           'src/js/PresenterGroup.js',
           'src/js/Block.js',
@@ -55,5 +61,5 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-contrib-uglify");
 
   grunt.registerTask('dev', ['concat', 'jshint', 'watch']);
-
+  grunt.registerTask('deploy', ['concat', 'jshint', 'uglify']);
 };
