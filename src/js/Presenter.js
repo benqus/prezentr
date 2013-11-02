@@ -14,11 +14,6 @@ var Presenter = prezentr.Presenter = Component.extend({
   animationQueue: AnimationQueue,
 
   /**
-   * @type {EventHub}
-   */
-  eventHub: EventHub,
-
-  /**
    * @constructor
    */
   constructor: function () {
@@ -36,6 +31,19 @@ var Presenter = prezentr.Presenter = Component.extend({
     view.initialize.apply(view, arguments);
 
     return Component.prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * Adds the Presenter instance to a PresenterGroup instance.
+   * @param parent {PresenterGroup}
+   * @param name {String}
+   */
+  addTo: function (parent, name) {
+    if (name && parent instanceof PresenterGroup) {
+      parent.add(name, this);
+    }
+
+    return this;
   },
 
   /**
@@ -65,11 +73,20 @@ var Presenter = prezentr.Presenter = Component.extend({
   },
 
   /**
+   * Rerenders the Presenter;
+   * @returns {Presenter}
+   */
+  reRender: function () {
+    this.remove().render();
+    return this;
+  },
+
+  /**
    * Displays the Presenter by rendering it's View.
    * @returns {Presenter}
    */
-  render: function () {
-    this.view.render();
+  render: function (attributes) {
+    this.view.render(attributes);
     return this;
   },
 
