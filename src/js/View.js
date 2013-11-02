@@ -16,14 +16,15 @@ var View = prezentr.View = Component.extend({
    * @param element {undefined|String|Element}
    */
   constructor: function (presenter, element) {
+    var _tagName = this.tagName;
     var _element;
 
     Component.apply(this, arguments);
 
     if (_isString(element)) {
       _element = View.selectElement(element);
-    } else if (_isUndefined(element)) {
-      _element = document.createElement(this.tagName);
+    } else if (_isUndefined(element) && _tagName) {
+      _element = document.createElement(_tagName);
     } else if (element instanceof Element) {
       _element = element;
     }
@@ -48,14 +49,6 @@ var View = prezentr.View = Component.extend({
    */
   find: function (selector) {
     return this.element.querySelector(selector);
-  },
-
-  /**
-   * Removes and renders the View again.
-   * @returns {View}
-   */
-  reRender: function () {
-    return this.remove().render();
   },
 
   /**
@@ -172,8 +165,8 @@ var View = prezentr.View = Component.extend({
   destroy: function () {
     this.remove();
     return Component.prototype.destroy.apply(this, arguments);
-  }
-}, {
+  },
+
   /**
    * Override this method if you want custom DOM selection.
    * @param descriptor {String}
