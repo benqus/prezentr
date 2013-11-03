@@ -73,15 +73,17 @@ var PresenterGroup = prezentr.PresenterGroup = Presenter.extend({
   },
 
   /**
-   * Removes the children but doesn't destroy them.
+   * Removes the children from the presentation tree but doesn't destroy them.
    * @returns {PresenterGroup}
    */
   empty: function () {
     var children = this._children_;
-    var name;
+    var i;
 
-    if (children.hasOwnProperty(name)) {
-      children[name].remove();
+    for (i in children) {
+      if (children.hasOwnProperty(i)) {
+        children[i].remove();
+      }
     }
 
     return this;
@@ -190,7 +192,6 @@ var PresenterGroup = prezentr.PresenterGroup = Presenter.extend({
    * @param method {String}
    * @param [selector] {String}
    * @param [attributes] {Object}
-   * @param [options] {Object}
    * @returns {PresenterGroup}
    */
   renderChild: function (name, method, selector, attributes) {

@@ -1,5 +1,5 @@
 /**
- * prezentr - 0.1.0
+ * prezentr - 0.2.0
  */
 (function (root) {
 
@@ -12,6 +12,13 @@ if (root.prezentr) {
 root.prezentr = prezentr;
 
 var _slice = Array.prototype.slice;
+
+var RENDER_METHODS = prezentr.renderMethods = {
+  APPEND: 'append',
+  PREPEND: 'prepend',
+  BEFORE: 'before',
+  AFTER: 'after'
+};
 
 var _isFunction = function (arg) {
   return (typeof arg === 'function');
@@ -33,6 +40,19 @@ var _isNumber = function (arg) {
   return (typeof arg === 'number' && !isNaN(arg) && isFinite(arg));
 };
 
+var _getElement = function (arg, parent) {
+  var result;
+
+  if (typeof arg === 'string') {
+    result = ((parent || document).querySelector(arg) || parent);
+  } else if (arg instanceof Element) {
+    result = arg;
+  } else if (arg instanceof View) {
+    result = arg.element;
+  }
+
+  return result;
+};
 
 var merge = (function () {
   var _merge = function (objects) {
@@ -74,99 +94,6 @@ var merge = (function () {
     }
   };
 }());
-
-/**
- * @class Component
- * @description Generic base class.
- */
-var Component = prezentr.Component = function () {};
-
-/**
- *
- * @param proto {Object}
- * @param statik {Object}
- * @returns {Function}
- */
-Component.extend = function (proto, statik) {
-    var Surrogate = function () {};
-    var Super = this;
-    var Class;
-
-    if (proto.hasOwnProperty('constructor')) {
-        Class = proto.constructor;
-    } else {
-        Class = function () {
-            return Super.apply(this, arguments);
-        };
-    }
-
-    Surrogate.prototype = Super.prototype;
-    Class.prototype = merge.left(new Surrogate(), proto, {
-        constructor: Class
-    });
-
-    merge.left(Class, statik, {
-        mixes: Super.mixes,
-        extend: Super.extend,
-        implement: Super.implement
-    });
-
-    return Class;
-};
-
-Component.mixes = function () {
-    var args = _slice.call(arguments);
-    var behaviours = [];
-    var surrogate, b;
-
-    while (args.length > 0) {
-        b = args.shift();
-        behaviours.push(_isFunction(b) ? b.prototype : b);
-    }
-
-    surrogate = merge.create.apply(merge, behaviours);
-
-    return this.extend(surrogate);
-};
-
-Component.implement = function () {
-    var args = _slice.call(arguments);
-    args.unshift(this.prototype);
-
-    merge.left.apply(merge, args);
-
-    return this;
-};
-
-Component.prototype = {
-    constructor: Component,
-
-    initialize: function () {
-        return this;
-    },
-
-    extend: function () {
-        var args = _slice.call(arguments);
-        args.unshift(this);
-
-        merge.left.apply(merge, args);
-
-        return this;
-    },
-
-    pause: function () {
-        return this;
-    },
-
-    resume: function () {
-        return this;
-    },
-
-
-    destroy: function () {
-        return this;
-    }
-};
 
 var EventHub = prezentr.EventHub = {
   /**
@@ -269,6 +196,132 @@ var EventHub = prezentr.EventHub = {
 };
 
 /**
+ * @class Component
+ * @description Generic base class.
+ */
+var Component = prezentr.Component = function () {};
+
+/**
+ * Backbone-like inheritance helper.
+ * @param proto {Object}
+ * @param statik {Object}
+ * @returns {Function}
+ */
+Component.extend = function (proto, statik) {
+  var Surrogate = function () {
+  };
+  var Super = this;
+  var Class;
+
+  if (proto.hasOwnProperty('constructor')) {
+    Class = proto.constructor;
+  } else {
+    Class = function () {
+      return Super.apply(this, arguments);
+    };
+  }
+
+  Surrogate.prototype = Super.prototype;
+  Class.prototype = merge.left(new Surrogate(), proto, {
+    constructor: Class
+  });
+
+  merge.left(Class, statik, {
+    mixes: Super.mixes,
+    extend: Super.extend,
+    implement: Super.implement
+  });
+
+  return Class;
+};
+
+/**
+ * Creates a mixin level before extending it.
+ * @returns {Function}
+ */
+Component.mixes = function () {
+  var args = _slice.call(arguments);
+  var behaviours = [];
+  var surrogate, b;
+
+  while (args.length > 0) {
+    b = args.shift();
+    behaviours.push(_isFunction(b) ? b.prototype : b);
+  }
+
+  surrogate = merge.create.apply(merge, behaviours);
+
+  return this.extend(surrogate);
+};
+
+/**
+ * Implements the provided objects on the prototype
+ * @returns {Function}
+ */
+Component.implement = function () {
+  var args = _slice.call(arguments);
+  args.unshift(this.prototype);
+
+  merge.left.apply(merge, args);
+
+  return this;
+};
+
+Component.prototype = {
+  constructor: Component,
+
+  /**
+   * @type {EventHub}
+   */
+  eventHub: EventHub,
+
+  /**
+   * Lifecycle method
+   * @returns {Component}
+   */
+  initialize: function () {
+    return this;
+  },
+
+  /**
+   * Mixes the provided objects to the Component instance.
+   * @returns {Component}
+   */
+  extend: function () {
+    var args = _slice.call(arguments);
+    args.unshift(this);
+
+    merge.left.apply(merge, args);
+
+    return this;
+  },
+
+  /**
+   * Lifecycle method
+   * @returns {Component}
+   */
+  pause: function () {
+    return this;
+  },
+
+  /**
+   * Lifecycle method
+   * @returns {Component}
+   */
+  resume: function () {
+    return this;
+  },
+
+  /**
+   * Lifecycle method
+   * @returns {Component}
+   */
+  destroy: function () {
+    return this;
+  }
+};
+
+/**
  * @type {Object}
  */
 var AnimationQueue = prezentr.AnimationQueue = {
@@ -364,14 +417,15 @@ var View = prezentr.View = Component.extend({
    * @param element {undefined|String|Element}
    */
   constructor: function (presenter, element) {
+    var _tagName = this.tagName;
     var _element;
 
     Component.apply(this, arguments);
 
     if (_isString(element)) {
       _element = View.selectElement(element);
-    } else if (_isUndefined(element)) {
-      _element = document.createElement(this.tagName);
+    } else if (_isUndefined(element) && _tagName) {
+      _element = document.createElement(_tagName);
     } else if (element instanceof Element) {
       _element = element;
     }
@@ -399,14 +453,6 @@ var View = prezentr.View = Component.extend({
   },
 
   /**
-   * Removes and renders the View again.
-   * @returns {View}
-   */
-  reRender: function () {
-    return this.remove().render();
-  },
-
-  /**
    * Renders the View, invoked by the containing Presenter.
    * @returns {View}
    */
@@ -415,15 +461,106 @@ var View = prezentr.View = Component.extend({
   },
 
   /**
+   * Returns the element of the provided View or the context.
+   * @param arg {View}
+   * @returns {Element}
+   */
+  getElement: function (arg) {
+    var element = this.element;
+
+    if (arg instanceof View) {
+      element = arg.element;
+    } else if (arg instanceof Element) {
+      element = arg;
+    }
+
+    return element;
+  },
+
+  /**
    * Appends the View's DOM Element to the specified parent DOM Element.
-   * @param parent {Element}
+   * @param parent {View|Element}
    * @returns {View}
    */
   appendTo: function (parent) {
     var element = this.element;
+    var _parent = this.getElement(parent);
 
-    if (element && parent instanceof Element) {
-      parent.appendChild(element);
+    if (element && _parent instanceof Element) {
+      _parent.appendChild(element);
+    }
+
+    return this;
+  },
+
+  /**
+   * Appends the given Element to the View's Element or the one specified by the selector.
+   * @param arg {View|Element}
+   * @param selector {String}
+   * @returns {View}
+   */
+  append: function (arg, selector) {
+    var root = (this.find(selector) || this.element);
+    var element = this.getElement(arg);
+
+    root.appendChild(element);
+
+    return this;
+  },
+
+  /**
+   * Appends the Element as a first child to the one specified by the provided selector.
+   * If the container Element is empty, it will append it to it.
+   * @param arg {View|Element}
+   * @param selector {String}
+   * @returns {View}
+   */
+  prepend: function (arg, selector) {
+    var first = (this.find(selector) || this.element).firstChild;
+    var element = this.getElement(arg);
+
+    if (first && element) {
+      first.insertBefore(element);
+    } else {
+      this.append(arg, selector);
+    }
+
+    return this;
+  },
+
+  /**
+   *
+   * Appends the element before the one specified by the selector.
+   * @param arg {View|Element}
+   * @param selector {String}
+   * @returns {View}
+   */
+  before: function (arg, selector) {
+    var before = this.find(selector);
+    var element = this.getElement(arg);
+
+    if (before && before.parentNode) {
+      before.parentNode.insertBefore(element, before);
+    }
+
+    return this;
+  },
+
+  /**
+   * Appends the element after the one specified by the selector.
+   * @param arg {View|Element}
+   * @param selector {String}
+   * @returns {View}
+   */
+  after: function (arg, selector) {
+    var after = this.find(selector);
+    var before = (after || {}).nextSibling;
+    var element = this.getElement(arg);
+
+    if (before && before.parentNode) {
+      before.parentNode.insertBefore(element, before);
+    } else if (after && after.parentNode) { //selector points to last child
+      after.parentNode.appendChild(element);
     }
 
     return this;
@@ -451,8 +588,8 @@ var View = prezentr.View = Component.extend({
   destroy: function () {
     this.remove();
     return Component.prototype.destroy.apply(this, arguments);
-  }
-}, {
+  },
+
   /**
    * Override this method if you want custom DOM selection.
    * @param descriptor {String}
@@ -460,25 +597,6 @@ var View = prezentr.View = Component.extend({
    */
   selectElement: function (descriptor) {
     return document.querySelector(descriptor);
-  }
-});
-
-/**
- * @class ActiveView
- * @extends View
- * @description ActiveView instances have a reference to a model
- *              and are allowed to subscribe to any events on it.
- */
-var ActiveView = prezentr.ActiveView = View.extend({
-  /**
-   * @constructor
-   * @param presenter {Presenter}
-   * @param model {Object|Emitter}
-   * @param element {Element}
-   */
-  constructor: function (presenter, model, element) {
-    View.call(this, presenter, element);
-    this.model = model;
   }
 });
 
@@ -498,16 +616,19 @@ var Presenter = prezentr.Presenter = Component.extend({
   animationQueue: AnimationQueue,
 
   /**
-   * @type {EventHub}
-   */
-  eventHub: EventHub,
-
-  /**
    * @constructor
    */
   constructor: function () {
+    var View = this.viewClass;
+    var _view;
+
     Component.apply(this, arguments);
-    this.view = new this.viewClass();
+
+    if (_isFunction(View)) {
+      _view = new View(this);
+    }
+
+    this.view = _view;
   },
 
   /**
@@ -520,6 +641,19 @@ var Presenter = prezentr.Presenter = Component.extend({
     view.initialize.apply(view, arguments);
 
     return Component.prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * Adds the Presenter instance to a PresenterGroup instance.
+   * @param parent {PresenterGroup}
+   * @param name {String}
+   */
+  addTo: function (parent, name) {
+    if (name && parent instanceof PresenterGroup) {
+      parent.add(name, this);
+    }
+
+    return this;
   },
 
   /**
@@ -549,12 +683,21 @@ var Presenter = prezentr.Presenter = Component.extend({
   },
 
   /**
-   * Displays the Presenter by rendering it's View.
+   * Rerenders the Presenter;
    * @returns {Presenter}
    */
-  render: function () {
-    this.view.render();
+  reRender: function () {
+    this.remove().render();
     return this;
+  },
+
+  /**
+   * Displays the Presenter by rendering it's View.
+   * @returns {View}
+   */
+  render: function (attributes) {
+    this.view.render(attributes);
+    return this.view;
   },
 
   /**
@@ -567,6 +710,224 @@ var Presenter = prezentr.Presenter = Component.extend({
   }
 });
 
+
+/**
+ * @class PresenterGroup
+ * @extends {Presenter}
+ */
+var PresenterGroup = prezentr.PresenterGroup = Presenter.extend({
+  /**
+   * @type {Object}
+   */
+  renderMappings: {},
+
+  /**
+   * @type {Object}
+   */
+  renderMethods: {},
+
+  /**
+   * @type {Object}
+   */
+  renderOrder: [],
+
+  /**
+   * @override
+   * @constructor
+   */
+  constructor: function () {
+    Presenter.apply(this, arguments);
+
+    /**
+     * @type {Object}
+     */
+    this._children_ = {};
+  },
+
+  reconstruct: function () {
+    this.destroy();
+
+    PresenterGroup.apply(this, arguments);
+
+    return this;
+  },
+
+  /**
+   * @override
+   */
+  initialize: function () {
+    var children = this._children_;
+    var child, i;
+
+    for (i in children) {
+      if (children.hasOwnProperty(i)) {
+        child = children[i];
+        child.initialize.apply(child, arguments);
+      }
+    }
+
+    return Presenter.prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * Adds a child Presenter to the PresenterGroup
+   * @param name {String}
+   * @param child {Presenter}
+   * @returns {PresenterGroup}
+   */
+  add: function (name, child) {
+    var children = this._children_;
+
+    if (_isString(name) && child instanceof Presenter && !children.hasOwnProperty(name)) {
+      children[name] = child;
+    }
+
+    return this;
+  },
+
+  /**
+   * Removes the children from the presentation tree but doesn't destroy them.
+   * @returns {PresenterGroup}
+   */
+  empty: function () {
+    var children = this._children_;
+    var i;
+
+    for (i in children) {
+      if (children.hasOwnProperty(i)) {
+        children[i].remove();
+      }
+    }
+
+    return this;
+  },
+
+  /**
+   * Removes the child Presenter specified by it's name.
+   * @param name {String}
+   * @returns {PresenterGroup}
+   */
+  remove: function (name) {
+    var children = this._children_;
+    var child = children[name];
+
+    if (child) {
+      child.destroy();
+      delete children[name];
+    }
+
+    return this;
+  },
+
+  /**
+   * Removes all children
+   * @returns {PresenterGroup}
+   */
+  removeAll: function () {
+    var children = this._children_;
+    var i;
+
+    for (i in children) {
+      if (children.hasOwnProperty(i)) {
+        this.remove(i);
+      }
+    }
+
+    return this;
+  },
+
+  /**
+   * Removes and re-renders all the children
+   * @param [attributes] {Object}
+   * @param [options] {Object}
+   * @returns {PresenterGroup}
+   */
+  reRender: function (attributes, options) {
+    this.empty();
+
+    Presenter.prototype.reRender.apply(this, arguments);
+
+    this.renderChildren(attributes, options);
+
+    return this;
+  },
+
+  /**
+   * @override
+   * @returns {Element}
+   */
+  render: function (attributes, options) {
+    var ret = Presenter.prototype.render.apply(this, arguments);
+
+    this.renderChildren.apply(this, arguments);
+
+    return ret;
+  },
+
+  /**
+   * Renders all of the children
+   * @param attributes {Object}
+   * @param options {Object}
+   * @returns {PresenterGroup}
+   */
+  renderChildren: function (attributes, options) {
+    var _options = (options || {});
+    var children = this._children_;
+    var rendered = {};
+    var rMappings = (_options.renderMappings || this.renderMappings);
+    var rMethods = (_options.renderMethods || this.renderMethods);
+    var rOrder = (_options.renderOrder || this.renderOrder);
+    var method, child, name, i;
+
+    if (rOrder && rOrder.length) {
+      for (i = 0; i < rOrder.length; i++) {
+        if (children.hasOwnProperty(name = rOrder[i])) {
+          rendered[name] = true;
+          method = (rMethods[name] || rMethods['*'] || RENDER_METHODS.APPEND);
+          this.renderChild(name, method, rMappings[i], (attributes || {}));
+        }
+      }
+    }
+
+    for (i in children) {
+      if (children.hasOwnProperty(i) && !rendered[i]) {
+        method = (rMethods[i] || rMethods['*'] || RENDER_METHODS.APPEND);
+        this.renderChild(i, method, rMappings[i], (attributes || {}));
+      }
+    }
+
+    return this;
+  },
+
+  /**
+   * Renders a mapped child.
+   * @param name {String}
+   * @param method {String}
+   * @param [selector] {String}
+   * @param [attributes] {Object}
+   * @returns {PresenterGroup}
+   */
+  renderChild: function (name, method, selector, attributes) {
+    var child = this._children_[name];
+    var childView;
+
+    if (child) {
+      childView = child.render(attributes);
+      this.view[method](childView, selector);
+    }
+
+    return this;
+  },
+
+  /**
+   * @override
+   * @returns {PresenterGroup}
+   */
+  destroy: function () {
+    this.removeAll.apply(this, arguments);
+    return Presenter.prototype.destroy.apply(this, arguments);
+  }
+});
 
 /**
  * @class Block
@@ -584,7 +945,7 @@ var Block = prezentr.Block = Component.extend({
    */
   constructor: function (element) {
     if (!(element instanceof Element)) {
-      throw new Error('Must... Specify... DOM root... (Please provide an Element to constructor the Block)');
+      throw new Error('Must... Specify... DOM root... (Please provide an Element for the constructor of the Block)');
     }
 
     var Main = this.mainClass;
@@ -608,15 +969,27 @@ var Block = prezentr.Block = Component.extend({
     var root = this.root;
 
     if (root && !this.initialized) {
-      root
-        .initialize.apply(root, arguments)
-        .getView()
-          .appendTo(this.element);
-
+      root.initialize.apply(root, arguments);
       this.initialized = true;
     }
 
     return Component.prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * Renders the presentation structure.
+   * @param attributes {Object}
+   * @returns {Block}
+   */
+  render: function (attributes) {
+    var root = this.root;
+
+    if (root) {
+      root.render.apply(root, arguments)
+        .appendTo(this.element);
+    }
+
+    return this;
   },
 
   /**

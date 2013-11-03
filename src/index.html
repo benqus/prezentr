@@ -10,8 +10,11 @@
         var app;
         var View = prezentr.View;
         var Presenter = prezentr.Presenter;
+        var PresenterGroup = prezentr.PresenterGroup;
 
+        //View
         var MyView = View.extend({
+          tagName: 'article',
           /**
            * @override
            */
@@ -21,21 +24,36 @@
           }
         });
 
+        //Presenter
         var MyPresenter = Presenter.extend({
           viewClass: MyView
         });
 
+        //PresenterGroup
+        var MyParentPresenter = PresenterGroup.extend({
+          /**
+           * @override
+           */
+          constructor: function () {
+            PresenterGroup.apply(this, arguments);
+            new MyPresenter().addTo(this, 'child');
+          }
+        });
+
+        //Block
         var MyBlock = prezentr.Block.extend({
-          mainClass: MyPresenter
+          mainClass: MyParentPresenter
         });
 
         window.onload = function () {
-          app = new MyBlock(document.body);
-          app.initialize("Hey mate!");
+          app = new MyBlock(document.querySelector('#app'));
+          app
+            .initialize("Hey mate!")
+            .render();
         }
 
       })((function () {
-          return this;
+        return this;
       })());
     </script>
 

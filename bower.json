@@ -1,29 +1,30 @@
 {
-    "name": "prezentr",
+  "name": "prezentr",
 
-    "version": "0.1.0",
+  "version": "0.2.0",
 
-    "author": {
-        "name": "Bence Kormos",
-        "url": "https://github.com/benqus"
-    },
+  "author": {
+    "name": "Bence Kormos",
+    "url": "https://github.com/benqus"
+  },
 
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/benqus/prezentr"
-    },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benqus/prezentr"
+  },
 
-    "main": "dist/prezentr.js",
+  "main": "dist/prezentr.js",
 
-    "devDependencies": {
-        "qunit": "~1.12.0",
-        "sinon": "~1.7.3"
-    },
+  "devDependencies": {
+    "qunit": "~1.12.0",
+    "sinon": "~1.7.3",
+    "handlebars.js": "1.0.0"
+  },
 
-    "licenses": [
-        {
-            "type": "GPLv3",
-            "url": "http://www.gnu.org/licenses/gpl-3.0.html"
-        }
-    ]
+  "licenses": [
+    {
+      "type": "GPLv3",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.html"
+    }
+  ]
 }
