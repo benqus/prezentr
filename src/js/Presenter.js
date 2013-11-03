@@ -91,11 +91,11 @@ var Presenter = prezentr.Presenter = Component.extend({
 
   /**
    * Displays the Presenter by rendering it's View.
-   * @returns {Presenter}
+   * @returns {View}
    */
   render: function (attributes) {
     this.view.render(attributes);
-    return this;
+    return this.view;
   },
 
   /**
