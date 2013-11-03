@@ -60,15 +60,33 @@ var View = prezentr.View = Component.extend({
   },
 
   /**
+   * Returns the element of the provided View or the context.
+   * @param arg {View}
+   * @returns {Element}
+   */
+  getElement: function (arg) {
+    var element = this.element;
+
+    if (arg instanceof View) {
+      element = arg.element;
+    } else if (arg instanceof Element) {
+      element = arg;
+    }
+
+    return element;
+  },
+
+  /**
    * Appends the View's DOM Element to the specified parent DOM Element.
-   * @param parent {Element}
+   * @param parent {View|Element}
    * @returns {View}
    */
   appendTo: function (parent) {
     var element = this.element;
+    var _parent = this.getElement(parent);
 
-    if (element && parent instanceof Element) {
-      parent.appendChild(element);
+    if (element && _parent instanceof Element) {
+      _parent.appendChild(element);
     }
 
     return this;
@@ -76,12 +94,13 @@ var View = prezentr.View = Component.extend({
 
   /**
    * Appends the given Element to the View's Element or the one specified by the selector.
-   * @param element {Element}
+   * @param arg {View|Element}
    * @param selector {String}
    * @returns {View}
    */
-  append: function (element, selector) {
+  append: function (arg, selector) {
     var root = (this.find(selector) || this.element);
+    var element = this.getElement(arg);
 
     root.appendChild(element);
 
@@ -91,17 +110,18 @@ var View = prezentr.View = Component.extend({
   /**
    * Appends the Element as a first child to the one specified by the provided selector.
    * If the container Element is empty, it will append it to it.
-   * @param element {Element}
+   * @param arg {View|Element}
    * @param selector {String}
    * @returns {View}
    */
-  prepend: function (element, selector) {
+  prepend: function (arg, selector) {
     var first = (this.find(selector) || this.element).firstChild;
+    var element = this.getElement(arg);
 
     if (first && element) {
       first.insertBefore(element);
     } else {
-      this.append(element, selector);
+      this.append(arg, selector);
     }
 
     return this;
@@ -110,15 +130,16 @@ var View = prezentr.View = Component.extend({
   /**
    *
    * Appends the element before the one specified by the selector.
-   * @param element {Element}
+   * @param arg {View|Element}
    * @param selector {String}
    * @returns {View}
    */
-  before: function (element, selector) {
+  before: function (arg, selector) {
     var before = this.find(selector);
+    var element = this.getElement(arg);
 
-    if (before && element) {
-      before.insertBefore(element);
+    if (before && before.parentNode) {
+      before.parentNode.insertBefore(element, before);
     }
 
     return this;
@@ -126,16 +147,17 @@ var View = prezentr.View = Component.extend({
 
   /**
    * Appends the element after the one specified by the selector.
-   * @param element {Element}
+   * @param arg {View|Element}
    * @param selector {String}
    * @returns {View}
    */
-  after: function (element, selector) {
+  after: function (arg, selector) {
     var after = this.find(selector);
     var before = (after || {}).nextSibling;
+    var element = this.getElement(arg);
 
-    if (before) {
-      before.insertBefore(element);
+    if (before && before.parentNode) {
+      before.parentNode.insertBefore(element, before);
     } else if (after && after.parentNode) { //selector points to last child
       after.parentNode.appendChild(element);
     }
