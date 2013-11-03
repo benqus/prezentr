@@ -14,7 +14,7 @@ var Block = prezentr.Block = Component.extend({
    */
   constructor: function (element) {
     if (!(element instanceof Element)) {
-      throw new Error('Must... Specify... DOM root... (Please provide an Element to constructor the Block)');
+      throw new Error('Must... Specify... DOM root... (Please provide an Element for the constructor of the Block)');
     }
 
     var Main = this.mainClass;
@@ -38,15 +38,27 @@ var Block = prezentr.Block = Component.extend({
     var root = this.root;
 
     if (root && !this.initialized) {
-      root
-        .initialize.apply(root, arguments)
-        .getView()
-          .appendTo(this.element);
-
+      root.initialize.apply(root, arguments);
       this.initialized = true;
     }
 
     return Component.prototype.initialize.apply(this, arguments);
+  },
+
+  /**
+   * Renders the presentation structure.
+   * @param attributes {Object}
+   * @returns {Block}
+   */
+  render: function (attributes) {
+    var root = this.root;
+
+    if (root) {
+      root.render.apply(root, arguments)
+        .appendTo(this.element);
+    }
+
+    return this;
   },
 
   /**
