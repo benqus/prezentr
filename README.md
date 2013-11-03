@@ -21,9 +21,11 @@ A short description of classes/mixins and their intended roles.
 
 ## Component
 
-Generic base class. Provides lifecycle API/behaviour to any derived class.
+Generic base class. Provides lifecycle API/behaviour and an EventHub to any derived class.
 
 Inherited prototype properties:
+
+ - `eventHub`
 
  - `initialize`
  - `pause`
@@ -68,6 +70,14 @@ Each Presenter should have a `View` derivative instance, specified by the Presen
         ...
     });
 
+## PresenterGroup
+
+PresenterGroups maintain child Presenter/Group instances.
+
+Your presentation structure should be defined in the constructor.
+
+Check the [test](https://github.com/benqus/prezentr/blob/master/test/templating.test.js)
+
 ## View
 
 > **extends** `Component`
@@ -77,9 +87,3 @@ View is *intentionally* kept as empty and simple as it can be by specifying a ve
 View follows the concept of Passive Views and has no knowledge of any model and should be controlled completely by a Presenter.
 
 You should extend and override the necessary methods for custom behaviour. For example: using templates, UI event subscriptions, etc.
-
-## ActiveView
-
-> **extends** `View`
-
-ActiveView instances have reference to a model and therefore can subscribe to model events.
