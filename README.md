@@ -63,10 +63,18 @@ Presenter instances give the structure and the main logic of the presentation.
 
 Each Presenter should have a `View` derivative instance, specified by the Presenter.prototype.View property.
 
+Presenters also benefit from an AnimationQueue to register on-going animations. This can be extremely powerful when nesting Presenters under the same animation namespace.
+
     var MyView = prezentr.View.extend({ ... });
 
     var MyPresenter = prezentr.Presenter.extend({
         viewClass: MyView,
+
+        startAnimation: function () {
+            this.animationQueue
+                .register("myAnimation", this);
+        },
+
         ...
     });
 
@@ -75,6 +83,18 @@ Each Presenter should have a `View` derivative instance, specified by the Presen
 PresenterGroups maintain child Presenter/Group instances.
 
 Your presentation structure should be defined in the constructor.
+
+    var MyGroup = prezentr.PresenterGroup.extend({
+        ...
+        constructor: function () {
+            prezentr.PresenterGroup.apply(this, arguments);
+
+            this
+              .add("child1", new Child())
+              .add("child2", new Child());
+        },
+        ...
+    });
 
 Check the [test](https://github.com/benqus/prezentr/blob/master/test/templating.test.js)
 
