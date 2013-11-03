@@ -17,8 +17,6 @@ The closest architectural pattern - if we really must specify one - would be **M
 
 A short description of classes/mixins and their intended roles.
 
-> **Headz up:** upcoming PresenterGroup class...
-
 ## Component
 
 Generic base class. Provides lifecycle API/behaviour and an EventHub to any derived class.
