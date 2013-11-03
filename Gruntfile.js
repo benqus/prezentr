@@ -5,6 +5,13 @@ module.exports = function (grunt) {
     pkg: pkg,
 
     uglify: {
+      options: {
+        banner: "/**\n" +
+          " * <%= pkg.name %> - <%= pkg.version %>\n" +
+          " * url: <%= pkg.repository.url %>\n" +
+          " * license: GPLv3 - https://github.com/benqus/prezentr/blob/master/LICENSE\n" +
+          " */\n"
+      },
       build: {
         src: 'build/<%= pkg.name %>.js',
         dest: 'build/<%= pkg.name %>.min.js'
