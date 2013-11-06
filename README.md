@@ -24,7 +24,7 @@ Generic base class. Provides lifecycle API/behaviour and an EventHub to any deri
 Inherited prototype properties:
 
  - `eventHub`
-
+ - 
  - `initialize`
  - `pause`
  - `resume`
