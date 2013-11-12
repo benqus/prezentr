@@ -3,7 +3,7 @@ prezentr
 
 Backbone-like presentation framework for front-ends.
 
-Based on my experience - so far -, a good and scalable **front-end** framework/environment is like a *punchbag*.
+A good and scalable **front-end** framework/environment is like a *punchbag*.
 Provides enough features for a massively *event-driven* application but it doesn't get afraid of having no data or
 back-end to sync with. No matter what - no model, no connection or scumbag user -, the app must stand. And stand well.
 Ant to take those nasty punches... ^_^
@@ -11,7 +11,7 @@ Ant to take those nasty punches... ^_^
 ***Prezentr*** is designed to give your app a **presentation structure** without specifying your domain-model.
 Data can be anything for a presentation, you might even end up having multiple domain-model to query and display attributes from.
 
-The closest architectural pattern - if we really must specify one - would be **MVP** by taking the focus off of the **M** and putting it on the **P**.
+Read more about the concept here: [Prezentr - presentation framework](http://benqus.tumblr.com/post/66477840976/prezentr-presentation-framework "Prezentr - presentation framework")
 
 # Main classes
 
@@ -21,14 +21,16 @@ A short description of classes/mixins and their intended roles.
 
 Generic base class. Provides lifecycle API/behaviour and an EventHub to any derived class.
 
-Inherited prototype properties:
+Inherited (prototype) lifecycle property methods:
 
- - `eventHub`
- - 
  - `initialize`
  - `pause`
  - `resume`
  - `destroy`
+
+And an additional sugar for event-driven apps:
+
+ - `eventHub {prezentr.EventHub}` - `on`, `once`, `off`, `trigger` as in Backbone
 
 Inherited static methods:
 
