@@ -6,6 +6,7 @@
     <script src="../build/prezentr.js"></script>
 
     <script>
+    /*global: prezentr*/
       (function () {
         var app;
         var View = prezentr.View;
@@ -50,11 +51,11 @@
           app
             .initialize("Hey mate!")
             .render();
-        }
+        };
 
-      })((function () {
+      })(function () {
         return this;
-      })());
+      }());
     </script>
 
   </head>
