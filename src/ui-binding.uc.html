@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prezentr</title>
+
+    <script src="../build/prezentr.js"></script>
+
+    <script>
+    /*global: prezentr*/
+      (function () {
+        var app;
+        var Presenter = prezentr.Presenter;
+
+        //Presenter
+        var MyPresenter = Presenter.extend({
+          bindings: {
+            
+          }
+        });
+
+        //Block
+        var MyBlock = prezentr.Block.extend({
+          mainClass: MyPresenter
+        });
+
+        window.onload = function () {
+          app = new MyBlock(document.querySelector('#app'));
+          app.render();
+        };
+
+      })(function () {
+        return this;
+      }());
+    </script>
+
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

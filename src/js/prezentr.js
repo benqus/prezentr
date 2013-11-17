@@ -1,3 +1,4 @@
+/*global: root*/
 var prezentr = {};
 
 if (root.prezentr) {
@@ -33,6 +34,14 @@ var _isString = function (arg) {
 
 var _isNumber = function (arg) {
   return (typeof arg === 'number' && !isNaN(arg) && isFinite(arg));
+};
+
+var _isArray = function (arg) {
+  return (arg instanceof Array);
+};
+
+var _isObject = function (arg) {
+  return (arg && arg instanceof Object && !_isArray(arg) && _isFunction(arg));
 };
 
 var _getElement = function (arg, parent) {
