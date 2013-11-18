@@ -39,6 +39,7 @@ module.exports = function (grunt) {
           'src/js/Component.js',
           'src/js/AnimationQueue.js',
           'src/js/View.js',
+          'src/js/UIEvents.js',
           'src/js/Presenter.js',
           'src/js/PresenterGroup.js',
           'src/js/Block.js',
